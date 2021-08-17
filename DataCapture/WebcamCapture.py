@@ -1,8 +1,8 @@
 import cv2, uuid, os, time
-labels = ['thumbsup', 'thumbsdown', 'thankyou', 'livelong']
-Objects = 'HandGestures'
+labels = ['PlateNumber']
+Objects = 'licence'
 number_imgs = 5
-home = 'A:\projects\FalconVision'  # Project Directory
+home = 'A:\projects\ANPR'  # Project Directory
 os.chdir(home)
 IMAGES_PATH = os.path.join(os.curdir, 'Datasets', Objects, 'CollectedImages')
 LABELIMG_PATH = os.path.join(home, 'DataCapture','labelImages')
@@ -35,6 +35,8 @@ def capture():
     cv2.destroyAllWindows()
 
 
+
+
 # Clone Tzutalin Label Image Script
 if not os.path.exists(LABELIMG_PATH):
     os.system('mkdir {}'.format(LABELIMG_PATH))
@@ -45,7 +47,9 @@ pyrcc5 takes a Qt Resource File (. qrc) and converts it into a
 Python module which can be imported into a PyQt5 application.
 All files loaded by Qt that are prefixed with a colon will be 
 loaded from the resources rather than the file system.
- '''
+'''
+
+
 
 os.system('cd {} && pyrcc5 -o libs/resources.py resources.qrc'. format(LABELIMG_PATH))
 

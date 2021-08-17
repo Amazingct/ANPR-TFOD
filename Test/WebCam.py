@@ -8,14 +8,14 @@ from object_detection.builders import model_builder
 from object_detection.utils import config_util
 
 
-home = 'A:\projects\FalconVision'  # Project Directory
+home = 'A:\projects\ANPR'  # Project Directory
 os.chdir(home)
 CUSTOM_MODEL_NAME = 'my_ssd_mobnet_model'
 PRETRAINED_MODEL_NAME = 'ssd_mobilenet_v2_fpnlite_320x320_coco17_tpu-8'
 PRETRAINED_MODEL_URL = 'http://download.tensorflow.org/models/object_detection/tf2/20200711/ssd_mobilenet_v2_fpnlite_320x320_coco17_tpu-8.tar.gz'
 TF_RECORD_SCRIPT_NAME = 'generate_tfrecord.py'
 LABEL_MAP_NAME = 'label_map.pbtxt'
-path_to_images = os.path.join('Datasets', 'HandGestures')
+path_to_images = os.path.join('Datasets', 'licence')
 paths ={
     'WORKSPACE_PATH': os.path.join('Tensorflow'),
     'SCRIPTS_PATH': os.path.join('Tensorflow','scripts'),

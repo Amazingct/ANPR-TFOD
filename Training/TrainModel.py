@@ -1,15 +1,15 @@
 import os
 import wget
 
-home = 'A:\projects\FalconVision'  # Project Directory
+home = 'A:\projects\ANPR'  # Project Directory
 os.chdir(home)
-labels = [{'name':'ThumbsUp', 'id':1}, {'name':'ThumbsDown', 'id':2}, {'name':'ThankYou', 'id':3}, {'name':'LiveLong', 'id':4}]
+labels = [{'name':'licence', 'id':1}]
 CUSTOM_MODEL_NAME = 'my_ssd_mobnet_model'
 PRETRAINED_MODEL_NAME = 'ssd_mobilenet_v2_fpnlite_320x320_coco17_tpu-8'
 PRETRAINED_MODEL_URL = 'http://download.tensorflow.org/models/object_detection/tf2/20200711/ssd_mobilenet_v2_fpnlite_320x320_coco17_tpu-8.tar.gz'
 TF_RECORD_SCRIPT_NAME = 'generate_tfrecord.py'
 LABEL_MAP_NAME = 'label_map.pbtxt'
-path_to_images = os.path.join('Datasets', 'HandGestures')
+path_to_images = os.path.join('Datasets', 'licence')
 paths ={
     'WORKSPACE_PATH': os.path.join('Tensorflow'),
     'SCRIPTS_PATH': os.path.join('Tensorflow','scripts'),
@@ -58,8 +58,6 @@ VERIFICATION_SCRIPT = os.path.join(paths['APIMODEL_PATH'], 'research', 'object_d
 os.system ('pip install tensorflow && python {}'.format(VERIFICATION_SCRIPT))
 
 
-
-import object_detection
 wget.download(PRETRAINED_MODEL_URL)
 os.system('move {} {}'.format(PRETRAINED_MODEL_NAME+'.tar.gz',paths['PRETRAINED_MODEL_PATH'] ))
 os.system('cd {} && tar -zxvf {}'.format(paths['PRETRAINED_MODEL_PATH'],PRETRAINED_MODEL_NAME+'.tar.gz' ))
@@ -79,7 +77,7 @@ os.system("python {} -x {} -l {} -o {}".format(files['TF_RECORD_SCRIPT'], os.pat
 os.system("python {} -x {} -l {} -o {}".format(files['TF_RECORD_SCRIPT'],os.path.join(paths['IMAGE_PATH'], 'test'),files['LABELMAP'],os.path.join(paths['ANNOTATION_PATH'], 'test.record') ))
 
 
-#copy model config file from downloded pre-trained model intomy own model folder
+# copy model config file from downloded pre-trained model intomy own model folder
 os.system('copy ' + os.path.join(paths['PRETRAINED_MODEL_PATH'], PRETRAINED_MODEL_NAME, 'pipeline.config') + " " + os.path.join(paths['CHECKPOINT_PATH']))
 
 import tensorflow as tf
@@ -97,7 +95,7 @@ with tf.io.gfile.GFile(files['PIPELINE_CONFIG'], "r") as f:
     proto_str = f.read()
     text_format.Merge(proto_str, pipeline_config)
 
-#editing
+# editing
 pipeline_config.model.ssd.num_classes = len(labels)
 pipeline_config.train_config.batch_size = 4
 pipeline_config.train_config.fine_tune_checkpoint = os.path.join(paths['PRETRAINED_MODEL_PATH'], PRETRAINED_MODEL_NAME, 'checkpoint', 'ckpt-0')
@@ -107,14 +105,14 @@ pipeline_config.train_input_reader.tf_record_input_reader.input_path[:] = [os.pa
 pipeline_config.eval_input_reader[0].label_map_path = files['LABELMAP']
 pipeline_config.eval_input_reader[0].tf_record_input_reader.input_path[:] = [os.path.join(paths['ANNOTATION_PATH'], 'test.record')]
 
-#saving
+# saving
 config_text = text_format.MessageToString(pipeline_config)
 with tf.io.gfile.GFile(files['PIPELINE_CONFIG'], "wb") as f:
     print('NEW CONFIG:', config_text)
     f.write(config_text)
 
-#TRAIN THE MODEL
+# TRAIN THE MODEL
 TRAINING_SCRIPT = os.path.join(paths['APIMODEL_PATH'], 'research', 'object_detection', 'model_main_tf2.py')
-command = "python {} --model_dir={} --pipeline_config_path={} --num_train_steps=1000".format(TRAINING_SCRIPT, paths['CHECKPOINT_PATH'],files['PIPELINE_CONFIG'])
+command = "python {} --model_dir={} --pipeline_config_path={} --num_train_steps=30000".format(TRAINING_SCRIPT, paths['CHECKPOINT_PATH'],files['PIPELINE_CONFIG'])
 os.chdir(home)
 os.system(command)
